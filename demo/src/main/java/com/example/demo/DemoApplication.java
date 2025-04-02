@@ -51,13 +51,38 @@ class SecurityConfig {
 class IpChecker {
 	public static String getConnectionType(HttpServletRequest request) {
 		String remoteAddr = request.getRemoteAddr();
-		if (countDots(remoteAddr) == 3){
-			return "You can not use API with IP connection!";
-		}
-		else{
+		if (isValidIPv4(remoteAddr)) {
+			return "You cannot use API with IP connection!";
+		} else {
 			return "Welcome to API";
 		}
 	}
 
-	public static int countDots(String str) {String[] parts = str.split("\\.");return parts.length - 1;}
+	public static boolean isValidIPv4(String str) {
+		String[] parts = str.split("\\.");
+		if (parts.length != 4) {
+			return false;
+		}
+
+		for (String part : parts) {
+			if (!isNumeric(part)) {
+				return false;
+			}
+
+			int num = Integer.parseInt(part);
+			if (num < 0 || num > 255) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public static boolean isNumeric(String str) {
+		try {
+			Integer.parseInt(str);
+			return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
+	}
 }
